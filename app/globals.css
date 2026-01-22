@@ -3,6 +3,8 @@
 :root {
   --background: #000000;
   --foreground: #ededed;
+  --violet-glow: 139 92 246;
+  --cyan-glow: 34 211 238;
 }
 
 @theme inline {
@@ -16,3 +18,38 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist), system-ui, sans-serif;
 }
+
+/* Gradient orb animation used in hero and feature sections */
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position:  200% center; }
+}
+
+.animate-orb-pulse  { animation: orb-pulse  6s ease-in-out infinite; }
+.animate-fade-up    { animation: fade-up    0.5s ease-out both; }
+.animate-shimmer    {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(var(--violet-glow) / 0.15) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--violet-glow) / 0.3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--violet-glow) / 0.6); }
