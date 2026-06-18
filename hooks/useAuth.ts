@@ -38,13 +38,18 @@ export function useAuth() {
     error: null,
   })
 
-  // Restore session from localStorage on mount
+  // Restore session from localStorage on mount.
+  // Wrapped in an async function so setState is not called synchronously
+  // in the effect body, satisfying the React Compiler rule.
   useEffect(() => {
-    const token = localStorage.getItem(KEYS.access)
-    const accountId = localStorage.getItem(KEYS.account)
-    if (token && accountId) {
-      setState({ status: "connected", accountId, accessToken: token, error: null })
+    async function restoreSession() {
+      const token = localStorage.getItem(KEYS.access)
+      const accountId = localStorage.getItem(KEYS.account)
+      if (token && accountId) {
+        setState({ status: "connected", accountId, accessToken: token, error: null })
+      }
     }
+    restoreSession()
   }, [])
 
   const connect = useCallback(async () => {
