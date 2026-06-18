@@ -26,7 +26,10 @@ export default function ConnectWallet() {
   const [mounted, setMounted]   = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    async function init() {
+      setMounted(true)
+    }
+    init()
 
     // Freighter injects asynchronously after page load — poll until present.
     const timer = setInterval(() => {
