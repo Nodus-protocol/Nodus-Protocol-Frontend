@@ -8,6 +8,7 @@ const tokenColors: Record<string, { bg: string; text: string }> = {
 interface TokenIconProps {
   symbol: TokenSymbol
   size?: "sm" | "md" | "lg"
+  className?: string
 }
 
 const sizes = {
@@ -16,11 +17,11 @@ const sizes = {
   lg: "h-12 w-12 text-base",
 }
 
-export function TokenIcon({ symbol, size = "md" }: TokenIconProps) {
+export function TokenIcon({ symbol, size = "md", className = "" }: TokenIconProps) {
   const colors = tokenColors[symbol] ?? { bg: "bg-white/10", text: "text-white" }
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-full font-bold ${sizes[size]} ${colors.bg} ${colors.text}`}
+      className={`inline-flex items-center justify-center rounded-full font-bold ${sizes[size]} ${colors.bg} ${colors.text} ${className}`.trim()}
       title={symbol}
     >
       {symbol.slice(0, 2)}

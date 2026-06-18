@@ -2,18 +2,6 @@
 
 import { useState, useEffect } from "react"
 
-interface FreighterApi {
-  isConnected: () => Promise<boolean>
-  getPublicKey: () => Promise<string>
-  getNetwork: () => Promise<string>
-}
-
-declare global {
-  interface Window {
-    freighter?: FreighterApi
-  }
-}
-
 function shortenAddress(addr: string): string {
   return `${addr.slice(0, 5)}…${addr.slice(-4)}`
 }
