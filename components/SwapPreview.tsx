@@ -2,6 +2,7 @@
 
 import { bpsToPercent, stroopsToXlm, rawToUsdc } from "@/lib/format"
 import { TokenIcon } from "@/components/TokenIcon"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 interface SwapPreviewProps {
   tokenIn: "XLM" | "USDC"
@@ -14,6 +15,30 @@ interface SwapPreviewProps {
 }
 
 export function SwapPreview({
+  tokenIn,
+  tokenOut,
+  amountIn,
+  amountOut,
+  priceImpactBps,
+  feeBps,
+  minAmountOut,
+}: SwapPreviewProps) {
+  return (
+    <ErrorBoundary>
+      <SwapPreviewInner
+        tokenIn={tokenIn}
+        tokenOut={tokenOut}
+        amountIn={amountIn}
+        amountOut={amountOut}
+        priceImpactBps={priceImpactBps}
+        feeBps={feeBps}
+        minAmountOut={minAmountOut}
+      />
+    </ErrorBoundary>
+  )
+}
+
+function SwapPreviewInner({
   tokenIn,
   tokenOut,
   amountIn,

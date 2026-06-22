@@ -2,6 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { TokenIcon } from "@/components/TokenIcon"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { stroopsToXlm, rawToUsdc, bpsToPercent } from "@/lib/format"
 
 interface LPPositionData {
@@ -21,6 +22,14 @@ interface LPPositionProps {
 }
 
 export function LPPosition({ data, loading, error }: LPPositionProps) {
+  return (
+    <ErrorBoundary>
+      <LPPositionInner data={data} loading={loading} error={error} />
+    </ErrorBoundary>
+  )
+}
+
+function LPPositionInner({ data, loading, error }: LPPositionProps) {
   if (loading) {
     return (
       <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
@@ -89,3 +98,4 @@ export function LPPosition({ data, loading, error }: LPPositionProps) {
     </div>
   )
 }
+

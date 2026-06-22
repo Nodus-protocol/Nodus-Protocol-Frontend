@@ -8,6 +8,8 @@ const geist = Geist({
   subsets: ["latin"],
 })
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://nodusprotocol.io"
+
 export const metadata: Metadata = {
   title: {
     default:  "Nodus Protocol",
@@ -23,11 +25,19 @@ export const metadata: Metadata = {
     title:       "Nodus Protocol — AMM DEX on Stellar Soroban",
     description: "Swap, provide liquidity, and earn fees on the fastest AMM built on Stellar Soroban.",
     locale:      "en_US",
+    url:         baseUrl,
+    images: [{
+      url:    `${baseUrl}/opengraph-image`,
+      width:  1200,
+      height: 630,
+      alt:    "Nodus Protocol — AMM DEX on Stellar Soroban",
+    }],
   },
   twitter: {
     card:        "summary_large_image",
     title:       "Nodus Protocol",
     description: "Permissionless AMM liquidity on Stellar Soroban.",
+    images:      [`${baseUrl}/opengraph-image`],
   },
   robots: {
     index:  true,
