@@ -1,5 +1,9 @@
+import { getCsrfToken } from "./csrf"
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1"
+
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"])
 
 // ── response envelope ─────────────────────────────────────────────────────────
 
@@ -93,9 +97,18 @@ async function request<T>(
   path: string,
   init: RequestInit = {}
 ): Promise<ApiResponse<T>> {
+  const method = (init.method ?? "GET").toUpperCase()
+  const csrfHeaders: Record<string, string> = MUTATING_METHODS.has(method)
+    ? { "X-CSRF-Token": await getCsrfToken() }
+    : {}
+
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json", ...init.headers },
     ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...csrfHeaders,
+      ...init.headers,
+    },
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: res.statusText }))
