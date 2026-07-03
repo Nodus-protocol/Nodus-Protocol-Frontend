@@ -23,6 +23,11 @@ describe("stroopsToXlm", () => {
     expect(stroopsToXlm("10000000")).toBe("1.00")
   })
 
+  it("returns an unavailable marker for nullish input", () => {
+    expect(stroopsToXlm(null)).toBe("\u2014")
+    expect(stroopsToXlm(undefined)).toBe("\u2014")
+  })
+
   it("returns — for non-numeric input", () => {
     expect(stroopsToXlm("abc")).toBe("—")
   })
@@ -43,6 +48,11 @@ describe("rawToUsdc", () => {
 
   it("accepts string input", () => {
     expect(rawToUsdc("1000000")).toBe("1.00")
+  })
+
+  it("returns an unavailable marker for nullish input", () => {
+    expect(rawToUsdc(null)).toBe("\u2014")
+    expect(rawToUsdc(undefined)).toBe("\u2014")
   })
 
   it("returns — for non-numeric input", () => {
