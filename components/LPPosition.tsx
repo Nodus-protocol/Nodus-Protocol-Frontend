@@ -8,10 +8,10 @@ import { stroopsToXlm, rawToUsdc, bpsToPercent } from "@/lib/format"
 interface LPPositionData {
   address: string
   lp_balance: string
-  amount_0_redeemed: string
-  amount_1_redeemed: string
-  token_0: string
-  token_1: string
+  amount_0_redeemed?: string | null
+  amount_1_redeemed?: string | null
+  token_0?: string | null
+  token_1?: string | null
   pool_share_bps: number
 }
 
@@ -59,7 +59,7 @@ function LPPositionInner({ data, loading, error }: LPPositionProps) {
     )
   }
 
-  const formatRedeemed = (raw: string, token: string) =>
+  const formatRedeemed = (raw: string | null | undefined, token: string) =>
     token === "XLM" ? stroopsToXlm(raw) : rawToUsdc(raw)
 
   return (
@@ -73,8 +73,8 @@ function LPPositionInner({ data, loading, error }: LPPositionProps) {
 
       <div className="grid grid-cols-2 gap-3">
         {[
-          { token: data.token_0, amount: data.amount_0_redeemed },
-          { token: data.token_1, amount: data.amount_1_redeemed },
+          { token: data.token_0 || "TOKEN_0", amount: data.amount_0_redeemed },
+          { token: data.token_1 || "TOKEN_1", amount: data.amount_1_redeemed },
         ].map(({ token, amount }) => (
           <div
             key={token}
