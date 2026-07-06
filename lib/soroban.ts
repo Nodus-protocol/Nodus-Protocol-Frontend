@@ -76,9 +76,21 @@ export async function signAndSubmit(
   const signedXdr = await signTx(assembled.toXDR())
   const signedTx = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE)
 
-  const sendResult = await server.sendTransaction(signedTx)
+  let sendResult = await server.sendTransaction(signedTx)
+
+  // TRY_AGAIN_LATER means the node didn't accept this submission attempt at
+  // all (nothing is in-flight yet) — retry the submission itself rather than
+  // falling through to poll a hash that was never actually queued.
+  for (let attempt = 0; sendResult.status === "TRY_AGAIN_LATER" && attempt < 3; attempt++) {
+    await new Promise((r) => setTimeout(r, 1000))
+    sendResult = await server.sendTransaction(signedTx)
+  }
+
   if (sendResult.status === "ERROR") {
     throw new Error(`Submission failed: ${JSON.stringify(sendResult.errorResult)}`)
+  }
+  if (sendResult.status === "TRY_AGAIN_LATER") {
+    throw new Error("Network is busy — please try the swap again in a moment")
   }
 
   const hash = sendResult.hash

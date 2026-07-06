@@ -141,8 +141,9 @@ export default function SwapPage() {
               placeholder="0.0"
               value={amountIn}
               onChange={(e) => setAmountIn(e.target.value)}
+              disabled={swapping}
               aria-label={`Amount of ${tokenIn} to pay`}
-              className="w-full bg-transparent text-2xl font-semibold text-white placeholder-gray-700 outline-none"
+              className="w-full bg-transparent text-2xl font-semibold text-white placeholder-gray-700 outline-none disabled:opacity-50"
             />
             <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/10 px-3 py-1.5">
               <TokenIcon symbol={tokenIn} size="sm" />
@@ -155,8 +156,9 @@ export default function SwapPage() {
         <div className="flex justify-center">
           <button
             onClick={flipTokens}
+            disabled={swapping}
             aria-label="Flip tokens"
-            className="rounded-full border border-white/10 bg-black/50 p-2 text-gray-400 transition-colors hover:border-violet-500/40 hover:text-white"
+            className="rounded-full border border-white/10 bg-black/50 p-2 text-gray-400 transition-colors hover:border-violet-500/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 4v12m0 0l4-4m-4 4l-4-4" />
@@ -168,7 +170,11 @@ export default function SwapPage() {
         <div className="rounded-xl border border-white/10 bg-black/30 p-4">
           <p className="mb-2 text-xs text-gray-500">You receive</p>
           <div className="flex items-center gap-3">
-            <div className="w-full text-2xl font-semibold tabular-nums text-white">
+            <div
+              role="status"
+              aria-live="polite"
+              className="w-full text-2xl font-semibold tabular-nums text-white"
+            >
               {quoting ? (
                 <span className="text-gray-600">…</span>
               ) : quote ? (
