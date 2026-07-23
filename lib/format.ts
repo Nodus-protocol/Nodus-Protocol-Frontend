@@ -18,6 +18,26 @@ export function rawToUsdc(raw: number | string): string {
   })
 }
 
+function toRawUnits(display: string, decimals: number): string {
+  const trimmed = display.trim()
+  if (!/^\d*\.?\d*$/.test(trimmed) || trimmed === "" || trimmed === ".") {
+    throw new Error(`Invalid amount: "${display}"`)
+  }
+  const [whole = "0", frac = ""] = trimmed.split(".")
+  const fracPadded = frac.slice(0, decimals).padEnd(decimals, "0")
+  return (BigInt(whole || "0") * BigInt(10 ** decimals) + BigInt(fracPadded || "0")).toString()
+}
+
+/** Parse a human-entered XLM amount ("1.5") into stroops ("15000000"). */
+export function xlmToStroops(display: string): string {
+  return toRawUnits(display, 7)
+}
+
+/** Parse a human-entered USDC amount ("1.5") into its 6-decimal raw units. */
+export function usdcToRaw(display: string): string {
+  return toRawUnits(display, 6)
+}
+
 /** Shorten a Stellar address: "GABCD…WXYZ" */
 export function shortenAddress(addr: string): string {
   if (!addr || addr.length < 10) return addr

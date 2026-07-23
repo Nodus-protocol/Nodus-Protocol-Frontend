@@ -48,6 +48,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `NEXT_PUBLIC_APP_URL` | Fully-qualified app origin (used for og:url) | `https://nodus.fi` |
 | `NEXT_PUBLIC_DOCS_URL` | Docs site URL | `https://docs.nodus.fi` |
 
+The `/api/v1` prefix is appended automatically — both `http://localhost:8080` and `http://localhost:8080/api/v1` are accepted as `NEXT_PUBLIC_API_URL`.
+
 Copy `.env.example` to `.env.local` — never commit real values.
 
 ---

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useAuth } from "@/hooks/useAuth"
 
 const navLinks = [
+  { label: "Swap", href: "/swap" },
   { label: "Protocol", href: "/protocol" },
   { label: "Docs", href: "/docs" },
   { label: "Community", href: "/community" },
