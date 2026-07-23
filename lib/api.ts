@@ -1,7 +1,5 @@
 import { getCsrfToken } from "./csrf"
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api/v1"
+import { API_BASE } from "./api-base"
 
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"])
 
@@ -102,7 +100,7 @@ async function request<T>(
     ? { "X-CSRF-Token": await getCsrfToken() }
     : {}
 
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",

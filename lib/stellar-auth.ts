@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"
+import { API_BASE } from "./api-base"
 
 const NETWORK_PASSPHRASE =
   process.env.NEXT_PUBLIC_STELLAR_NETWORK === "mainnet"
@@ -24,7 +24,7 @@ export function isFreighterInstalled(): boolean {
 
 async function fetchChallenge(accountId: string): Promise<string> {
   const res = await fetch(
-    `${API_URL}/api/v1/auth/stellar/challenge?account=${encodeURIComponent(accountId)}`
+    `${API_BASE}/auth/stellar/challenge?account=${encodeURIComponent(accountId)}`
   )
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
@@ -35,7 +35,7 @@ async function fetchChallenge(accountId: string): Promise<string> {
 }
 
 async function exchangeToken(signedXdr: string): Promise<TokenPair> {
-  const res = await fetch(`${API_URL}/api/v1/auth/stellar/token`, {
+  const res = await fetch(`${API_BASE}/auth/stellar/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ transaction: signedXdr }),
