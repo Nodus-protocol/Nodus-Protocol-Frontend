@@ -3,6 +3,7 @@
 import { useState } from "react"
 
 const PRESETS = [0.1, 0.5, 1.0] // percent
+const CUSTOM_SLIPPAGE_PATTERN = /^(?:\d+|\d*\.\d+)$/
 
 interface SlippageSelectorProps {
   value: number          // percent, e.g. 0.5
@@ -12,11 +13,12 @@ interface SlippageSelectorProps {
 export function SlippageSelector({ value, onChange }: SlippageSelectorProps) {
   const [custom, setCustom] = useState("")
   const isCustom = !PRESETS.includes(value)
+  const isInvalidCustom = custom !== "" && parseCustomSlippage(custom) === null
 
   function handleCustom(raw: string) {
     setCustom(raw)
-    const n = parseFloat(raw)
-    if (!isNaN(n) && n > 0 && n <= 50) {
+    const n = parseCustomSlippage(raw)
+    if (n !== null) {
       onChange(n)
     }
   }
@@ -40,21 +42,31 @@ export function SlippageSelector({ value, onChange }: SlippageSelectorProps) {
         ))}
 
         <div className={`flex items-center gap-1 rounded-lg border px-2 py-1 transition-colors ${
-          isCustom ? "border-violet-500/50" : "border-white/10"
+          isInvalidCustom
+            ? "border-red-500/60"
+            : isCustom ? "border-violet-500/50" : "border-white/10"
         }`}>
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             min="0.01"
             max="50"
             step="0.1"
             placeholder="Custom"
             value={custom}
             onChange={(e) => handleCustom(e.target.value)}
-            className="w-16 bg-transparent text-xs text-white placeholder-gray-600 outline-none"
+            aria-invalid={isInvalidCustom}
+            className={`w-16 bg-transparent text-xs placeholder-gray-600 outline-none ${
+              isInvalidCustom ? "text-red-400" : "text-white"
+            }`}
           />
           <span className="text-xs text-gray-600">%</span>
         </div>
       </div>
+
+      {isInvalidCustom && (
+        <p className="text-xs text-red-400">Invalid custom slippage</p>
+      )}
 
       {value > 5 && (
         <p className="text-xs text-yellow-500">
@@ -63,4 +75,15 @@ export function SlippageSelector({ value, onChange }: SlippageSelectorProps) {
       )}
     </div>
   )
+}
+
+function parseCustomSlippage(raw: string): number | null {
+  const value = raw.trim()
+
+  if (!CUSTOM_SLIPPAGE_PATTERN.test(value)) {
+    return null
+  }
+
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed > 0 && parsed <= 50 ? parsed : null
 }
