@@ -1,41 +1,77 @@
-/** Format a stroop (1/10,000,000 XLM) value as a human-readable XLM amount. */
+/**
+ * Formatting utilities for the Nodus Protocol frontend.
+ *
+ * All financial values use BigInt arithmetic internally — no Number
+ * coercion, no floating-point surprises.
+ */
+
+import { toBaseUnits } from "@/lib/math"
+
+/* ------------------------------------------------------------------ */
+/*  XLM helpers                                                        */
+/* ------------------------------------------------------------------ */
+
+/** Format stroops (1/10,000,000 XLM) as a human-readable XLM amount. */
 export function stroopsToXlm(stroops: number | string): string {
-  const n = typeof stroops === "string" ? parseInt(stroops, 10) : stroops
-  if (isNaN(n)) return "—"
-  return (n / 10_000_000).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 7,
-  })
-}
-
-/** Format a raw USDC amount (6 decimals) to a display string. */
-export function rawToUsdc(raw: number | string): string {
-  const n = typeof raw === "string" ? parseInt(raw, 10) : raw
-  if (isNaN(n)) return "—"
-  return (n / 1_000_000).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 6,
-  })
-}
-
-function toRawUnits(display: string, decimals: number): string {
-  const trimmed = display.trim()
-  if (!/^\d*\.?\d*$/.test(trimmed) || trimmed === "" || trimmed === ".") {
-    throw new Error(`Invalid amount: "${display}"`)
+  try {
+    const raw = BigInt(stroops)
+    return formatDecimals(raw.toString(), 7, 2, 7)
+  } catch {
+    return "—"
   }
-  const [whole = "0", frac = ""] = trimmed.split(".")
-  const fracPadded = frac.slice(0, decimals).padEnd(decimals, "0")
-  return (BigInt(whole || "0") * BigInt(10 ** decimals) + BigInt(fracPadded || "0")).toString()
 }
 
 /** Parse a human-entered XLM amount ("1.5") into stroops ("15000000"). */
 export function xlmToStroops(display: string): string {
-  return toRawUnits(display, 7)
+  return toBaseUnits(display, 7)
+}
+
+/* ------------------------------------------------------------------ */
+/*  USDC helpers                                                       */
+/* ------------------------------------------------------------------ */
+
+/** Format raw USDC units (6 decimals) as a display string. */
+export function rawToUsdc(raw: number | string): string {
+  try {
+    const n = BigInt(raw)
+    return formatDecimals(n.toString(), 6, 2, 6)
+  } catch {
+    return "—"
+  }
 }
 
 /** Parse a human-entered USDC amount ("1.5") into its 6-decimal raw units. */
 export function usdcToRaw(display: string): string {
-  return toRawUnits(display, 6)
+  return toBaseUnits(display, 6)
+}
+
+/* ------------------------------------------------------------------ */
+/*  Generic helpers                                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Format an integer base-unit string as a display string with at least
+ * `minDecimals` and at most `maxDecimals` fractional digits, trimming
+ * trailing zeros.
+ */
+export function formatDecimals(
+  base: string,
+  decimals: number,
+  minDecimals = 2,
+  maxDecimals = decimals,
+): string {
+  const raw = BigInt(base)
+  const pow = BigInt(10 ** decimals)
+  const whole = raw / pow
+  const frac = raw % pow
+  let fracStr = frac.toString().padStart(decimals, "0").slice(0, maxDecimals)
+
+  // Trim trailing zeros, keeping at least minDecimals
+  while (fracStr.length > minDecimals && fracStr.endsWith("0")) {
+    fracStr = fracStr.slice(0, -1)
+  }
+
+  return `${whole.toString()}.${fracStr}`
 }
 
 /** Shorten a Stellar address: "GABCD…WXYZ" */
