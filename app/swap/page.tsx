@@ -7,6 +7,7 @@ import { signAndSubmit, signWithFreighter } from "@/lib/soroban"
 import { SwapPreview } from "@/components/SwapPreview"
 import { SlippageSelector } from "@/components/SlippageSelector"
 import { TokenIcon } from "@/components/TokenIcon"
+import { applySlippage } from "@/lib/math"
 import {
   stroopsToXlm,
   rawToUsdc,
@@ -86,9 +87,8 @@ export default function SwapPage() {
   // Minimum acceptable output given the selected slippage tolerance.
   const minAmountOut = useMemo(() => {
     if (!quote) return undefined
-    const out = BigInt(quote.amount_out)
-    const bps = BigInt(Math.round(slippage * 100))
-    return (out - (out * bps) / BigInt(10_000)).toString()
+    const bps = Math.round(slippage * 100)
+    return applySlippage(quote.amount_out, bps)
   }, [quote, slippage])
 
   function flipTokens() {

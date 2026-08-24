@@ -1,8 +1,11 @@
 "use client"
 
 import { bpsToPercent, stroopsToXlm, rawToUsdc } from "@/lib/format"
+import { computeRate } from "@/lib/math"
 import { TokenIcon } from "@/components/TokenIcon"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
+
+const DECIMALS: Record<"XLM" | "USDC", number> = { XLM: 7, USDC: 6 }
 
 interface SwapPreviewProps {
   tokenIn: "XLM" | "USDC"
@@ -50,6 +53,11 @@ function SwapPreviewInner({
   const formatAmount = (raw: string, token: string) =>
     token === "XLM" ? stroopsToXlm(raw) : rawToUsdc(raw)
 
+  // Exchange rate is output / input with the token's decimal scale,
+  // e.g. 10000000 stroops (10 XLM) → 5000000 raw (5 USDC) = 0.5 USDC/XLM.
+  // Displayed as a human-scale amount without Number arithmetic.
+  const rate = computeRate(amountOut, amountIn, DECIMALS[tokenOut], DECIMALS[tokenIn])
+
   const impactColor =
     priceImpactBps < 50   ? "text-green-400"
     : priceImpactBps < 200 ? "text-yellow-400"
@@ -61,7 +69,7 @@ function SwapPreviewInner({
       <div className="flex justify-between text-gray-400">
         <span>Rate</span>
         <span className="text-white">
-          1 {tokenIn} = {formatAmount(amountOut, tokenOut)} {tokenOut}
+          1 {tokenIn} = {rate} {tokenOut}
         </span>
       </div>
 
